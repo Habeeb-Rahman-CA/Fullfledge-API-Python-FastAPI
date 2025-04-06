@@ -1,3 +1,4 @@
+from typing import Optional, List
 from fastapi import FastAPI, Response, status, HTTPException, Depends
 import psycopg2
 from psycopg2.extras import RealDictCursor
