@@ -39,7 +39,7 @@ async def get_post(id: str, db: Session = Depends(get_db)):
 
 # Create Post
 @app.post('/posts', status_code=status.HTTP_201_CREATED)
-async def create_post(post: schemas.Post, db:Session = Depends(get_db)):
+async def create_post(post: schemas.CreatePost, db:Session = Depends(get_db)):
     new_post = models.Post(**post.model_dump())
     db.add(new_post)
     db.commit()
@@ -58,7 +58,7 @@ async def delete_post(id:str, db: Session = Depends(get_db)):
 
 # Update Post By Id
 @app.put('/posts/{id}')
-async def update_post(id: str, post: schemas.Post, db: Session = Depends(get_db)):
+async def update_post(id: str, post: schemas.UpdatePost, db: Session = Depends(get_db)):
     post_query = db.query(models.Post).filter(models.Post.id == id)
     edit_post = post_query.first()
     if edit_post == None:
