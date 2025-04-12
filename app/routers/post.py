@@ -25,7 +25,7 @@ async def get_post(id: str, db: Session = Depends(get_db), current_user: schemas
 # Create Post
 @router.post('/', status_code=status.HTTP_201_CREATED)
 async def create_post(post: schemas.CreatePost, db:Session = Depends(get_db), current_user: schemas.UserOut = Depends(oauth2.get_current_user)):
-    new_post = models.Post(**post.model_dump())
+    new_post = models.Post(owner_id=current_user.id, **post.model_dump())
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
@@ -34,10 +34,10 @@ async def create_post(post: schemas.CreatePost, db:Session = Depends(get_db), cu
 # Delete Post By Id
 @router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_post(id:str, db: Session = Depends(get_db), current_user: schemas.UserOut = Depends(oauth2.get_current_user)):
-    post = db.query(models.Post).filter(models.Post.id == id)
+    post_query = db.query(models.Post).filter(models.Post.id == id)
+    post = post_query.first()
     if post == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id:{id} doesn't exist!")
-    post.delete(synchronize_session=False)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
